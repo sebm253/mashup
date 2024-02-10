@@ -91,6 +91,12 @@ type Output struct {
 	encodeFunc EncodeFunc
 }
 
+// Mashup creates a color mashup of src and dst by computing and replacing their most prominent colors.
+//
+// Specify the maximum amount of colors that should be replaced using the maxColors parameter.
+// If the amount of colors in either src or dst is less than the maxColors value, this amount will become the maximum.
+//
+// Additionally, if the src and dst are not of the same type, both formats are registered.
 func Mashup(src, dst *Input, out *Output, maxColors int) error {
 	image.RegisterFormat(src.name, src.magic, src.decodeFunc, src.decodeConfigFunc)
 
