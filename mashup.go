@@ -1,14 +1,13 @@
 package mashup
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
 	"io"
-
-	"github.com/pkg/errors"
 )
 
 // JPEG
@@ -76,13 +75,13 @@ func Mashup(src, dst *Input, out *Output, maxColors int) error {
 
 	srcImage, _, err := image.Decode(src.in)
 	if err != nil {
-		return errors.Wrap(err, "mashup: could not decode source to image")
+		return fmt.Errorf("mashup: could not decode src to image: %w", err)
 	}
 	_, srcSortedKeys := getProminentImageColors(srcImage)
 
 	dstImage, _, err := image.Decode(dst.in)
 	if err != nil {
-		return errors.Wrap(err, "mashup: could not decode dst to image")
+		return fmt.Errorf("mashup: could not decode dst to image: %w", err)
 	}
 	dstPixels, dstSortedKeys := getProminentImageColors(dstImage)
 
@@ -99,7 +98,7 @@ func Mashup(src, dst *Input, out *Output, maxColors int) error {
 		}
 	}
 	if err := out.encodeFunc(out.w, modifiedImage); err != nil {
-		return errors.Wrap(err, "mashup: could not encode image")
+		return fmt.Errorf("mashup: could not encode image: %w", err)
 	}
 	return nil
 }
