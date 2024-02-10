@@ -99,6 +99,9 @@ type Output struct {
 //
 // Additionally, if the src and dst are not of the same type, both formats are registered.
 func Mashup(src, dst *Input, out *Output, maxColors int) error {
+	if maxColors <= 0 {
+		return fmt.Errorf("mashup: maxColors cannot be negative or zero, provided: %d", maxColors)
+	}
 	image.RegisterFormat(src.name, src.magic, src.decodeFunc, src.decodeConfigFunc)
 
 	if dst.name != src.name || dst.magic != src.magic {
