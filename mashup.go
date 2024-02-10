@@ -12,6 +12,7 @@ import (
 
 // JPEG
 
+// NewJPEGInput creates a new Input for JPEGs
 func NewJPEGInput(r io.Reader) *Input {
 	return &Input{
 		in:               r,
@@ -22,6 +23,7 @@ func NewJPEGInput(r io.Reader) *Input {
 	}
 }
 
+// NewJPEGOutput creates a new Output for JPEGs with the given quality
 func NewJPEGOutput(w io.Writer, quality int) *Output {
 	return &Output{
 		w:          w,
@@ -31,6 +33,7 @@ func NewJPEGOutput(w io.Writer, quality int) *Output {
 
 // PNG
 
+// NewPNGInput creates a new Input for PNGs
 func NewPNGInput(r io.Reader) *Input {
 	return &Input{
 		in:               r,
@@ -41,10 +44,32 @@ func NewPNGInput(r io.Reader) *Input {
 	}
 }
 
+// NewPNGOutput creates a new Output for PNGs
 func NewPNGOutput(w io.Writer) *Output {
 	return &Output{
 		w:          w,
 		encodeFunc: png.Encode,
+	}
+}
+
+// custom
+
+// NewCustomInput creates a new Input for types not supported by this library
+func NewCustomInput(r io.Reader, name, magic string, decodeFunc DecodeFunc, decodeConfigFunc DecodeConfigFunc) *Input {
+	return &Input{
+		in:               r,
+		name:             name,
+		magic:            magic,
+		decodeFunc:       decodeFunc,
+		decodeConfigFunc: decodeConfigFunc,
+	}
+}
+
+// NewCustomOutput creates a new Output for types not supported by this library
+func NewCustomOutput(w io.Writer, encodeFunc EncodeFunc) *Output {
+	return &Output{
+		w:          w,
+		encodeFunc: encodeFunc,
 	}
 }
 
@@ -56,14 +81,14 @@ type Input struct {
 	name  string
 	magic string
 
-	decodeFunc       func(io.Reader) (image.Image, error)
-	decodeConfigFunc func(io.Reader) (image.Config, error)
+	decodeFunc       DecodeFunc
+	decodeConfigFunc DecodeConfigFunc
 }
 
 type Output struct {
 	w io.Writer
 
-	encodeFunc func(io.Writer, image.Image) error
+	encodeFunc EncodeFunc
 }
 
 func Mashup(src, dst *Input, out *Output, maxColors int) error {
@@ -103,7 +128,14 @@ func Mashup(src, dst *Input, out *Output, maxColors int) error {
 	return nil
 }
 
-func jpegEncodeFunc(quality int) func(io.Writer, image.Image) error {
+// helpers
+
+type DecodeFunc func(io.Reader) (image.Image, error)
+type DecodeConfigFunc func(io.Reader) (image.Config, error)
+
+type EncodeFunc func(io.Writer, image.Image) error
+
+func jpegEncodeFunc(quality int) EncodeFunc {
 	return func(w io.Writer, img image.Image) error {
 		return jpeg.Encode(w, img, &jpeg.Options{
 			Quality: quality,
