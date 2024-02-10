@@ -67,7 +67,7 @@ type Output struct {
 	encodeFunc func(io.Writer, image.Image) error
 }
 
-func Mashup(src, dst Input, out Output, maxColors int) error {
+func Mashup(src, dst *Input, out *Output, maxColors int) error {
 	image.RegisterFormat(src.name, src.magic, src.decodeFunc, src.decodeConfigFunc)
 
 	if dst.name != src.name || dst.magic != src.magic {
