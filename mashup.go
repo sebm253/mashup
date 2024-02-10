@@ -91,7 +91,8 @@ type Output struct {
 	encodeFunc EncodeFunc
 }
 
-// Mashup creates a color mashup of src and dst by computing and replacing their most prominent colors.
+// Mashup creates a color mashup of src and dst by computing their most prominent colors.
+// Most prominent colors in dst will be replaced by the most prominent colors of src.
 //
 // Specify the maximum amount of colors that should be replaced using the maxColors parameter.
 // If the amount of colors in either src or dst is less than the maxColors value, this amount will become the maximum.
